@@ -1,6 +1,7 @@
 function Tile(game) {
     Phaser.Group.call(this, game);
 
+    this.isEditable = true;
     this.init();
 };
 
@@ -25,4 +26,20 @@ Tile.prototype.createTile = function(spriteName, frame) {
 Tile.prototype.init = function() {
     this.floor = this.createTile("tile:floor", 0);
     this.addChild(this.floor);
+};
+
+Tile.prototype.toggle = function() {
+    if (this.item == undefined) {
+        this.setItem("tile:detail", 0, true);
+    } else {
+        this.item.destroy();
+        this.item = null;
+    }
+};
+
+Tile.prototype.setItem = function(spriteName, frame, isEditable) {
+    this.isEditable = (isEditable ? true : false);
+
+    this.item = this.createTile("tile:detail", 0);
+    this.addChild(this.item);
 };

@@ -27,6 +27,11 @@ GAME.Game.prototype = {
     },
     createPanel: function() {
         this.panel = new Panel(this.game);
+        this.panel.buttonToggleClicked.add(this.onPanelToggleButtonClicked, this);
         this.panelContainer.addChild(this.panel);
+    },
+    /* Events */
+    onPanelToggleButtonClicked: function(state) {
+        this.map.simulate();
     }
 };

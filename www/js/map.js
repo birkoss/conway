@@ -49,28 +49,54 @@ Map.prototype.createMap = function() {
         this.tiles.push(rows);
     }
 
-    this.tiles[0][0].toggle();
+    //this.tiles[0][0].toggle();
+};
+
+Map.prototype.simulate = function() {
+    let newGeneration = [];
+
+    /* Simulate the next generation simultaneously */
+    for (let gridY=0; gridY<this.gridHeight; gridY++) {
+        let rows = [];
+        for (let gridX=0; gridX<this.gridWidth; gridX++) {
+            let total = this.getNeighboors(gridX, gridY, true);
+            if (this.tiles[gridY][gridX].isAlive()) {
+                rows.push(total >= 2 && total <= 3 ? true : false);
+            } else {
+                rows.push(total == 3 ? true : false);
+            }
+        }
+        newGeneration.push(rows);
+    }
+
+    /* Apply the next generation */
+    for (let gridY=0; gridY<this.gridHeight; gridY++) {
+        for (let gridX=0; gridX<this.gridWidth; gridX++) {
+            if (newGeneration[gridY][gridX] != this.tiles[gridY][gridX].isAlive()) {
+                this.tiles[gridY][gridX].toggle();
+            }
+        }
+    }
 };
 
 /* Helpers */
 
-Map.prototype.getNeighboors = function(neighboors, gridX, gridY, tileState) {
-    if (tileState == undefined) {
-        tileState = 0;
-    }
-    if (gridX > 0 && gridX < this.gridWidth + 1 && gridY > 0 && gridY < this.gridHeight + 1) {
-        let tile = this.tiles[gridY][gridX];
-        if (tile.isFilled == tileState && neighboors.indexOf(tile) == -1) {
-            neighboors.push(tile);
-            for (let y=-1; y<=1; y++) {
-                for (let x=-1; x<=1; x++) {
-                    if (Math.abs(x) != Math.abs(y)) {
-                        this.getNeighboors(neighboors, gridX+x, gridY+y, tileState);
+Map.prototype.getNeighboors = function(gridX, gridY, isAlive) {
+    let total = 0;
+    for (let y=-1; y<=1; y++) {
+        for (let x=-1; x<=1; x++) {
+            if (x != 0 || y != 0) {
+                let newX = gridX + x;
+                let newY = gridY + y;
+                if (newX >= 0 && newX < this.gridWidth && newY >= 0 && newY < this.gridHeight) {
+                    if (this.tiles[newY][newX].isAlive() == isAlive) {
+                        total++;
                     }
                 }
             }
         }
     }
+    return total;
 };
 
 /* Events */

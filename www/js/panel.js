@@ -4,6 +4,8 @@ function Panel(game) {
     this.backgroundContainer = this.game.add.group();
     this.addChild(this.backgroundContainer);
 
+    this.buttonToggleClicked = new Phaser.Signal();
+
     this.init();
 };
 
@@ -22,5 +24,7 @@ Panel.prototype.init = function() {
 };
 
 Panel.prototype.onButtonClicked = function() {
-    console.log("OUI");
+    this.buttonToggleClicked.dispatch(this.button.label.text);
+
+    this.button.label.text = (this.button.label.text == "Start" ? "Stop" : "Start");
 };

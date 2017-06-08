@@ -29,12 +29,16 @@ Tile.prototype.init = function() {
 };
 
 Tile.prototype.toggle = function() {
-    if (this.item == undefined) {
+    if (!this.isAlive()) {
         this.setItem("tile:detail", 0, true);
     } else {
         this.item.destroy();
         this.item = null;
     }
+};
+
+Tile.prototype.isAlive = function() {
+    return (this.item != undefined);
 };
 
 Tile.prototype.setItem = function(spriteName, frame, isEditable) {

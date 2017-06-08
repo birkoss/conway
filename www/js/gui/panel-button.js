@@ -24,19 +24,19 @@ PanelButton.prototype.init = function() {
     this.addChild(this.background);
 };
 
-PanelButton.prototype.setLabel = function(label) {
-    let buttonLabel = this.game.add.bitmapText(0, 0, "font:gui", label, 20);
-    buttonLabel.anchor.set(0.5, 0.5);
-    buttonLabel.x += buttonLabel.width/2;
-    buttonLabel.y += buttonLabel.height/2;
-    this.addChild(buttonLabel);
+PanelButton.prototype.setLabel = function(newLabel) {
+    this.label = this.game.add.bitmapText(0, 0, "font:gui", newLabel, 20);
+    this.label.anchor.set(0.5, 0.5);
+    this.label.x += this.label.width/2;
+    this.label.y += this.label.height/2;
+    this.addChild(this.label);
 
     this.background.resize(120, 40);
     this.getChildAt(0).width = 120;
     this.getChildAt(0).height = 40;
 
-    buttonLabel.x += (this.background.width - buttonLabel.width) / 2;
-    buttonLabel.y += (this.background.height - buttonLabel.height) / 2;
+    this.label.x += (this.background.width - this.label.width) / 2;
+    this.label.y += (this.background.height - this.label.height) / 2;
 };
 
 PanelButton.prototype.showOver = function(sprite, pointer) {

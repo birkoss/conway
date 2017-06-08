@@ -12,6 +12,9 @@ GAME.Preload.prototype = {
         this.load.spritesheet('tile:detail', 'images/tiles/detail.png', 8, 8);
         this.load.image('tile:blank', 'images/tiles/blank.png');
 
+        this.load.spritesheet('gui:btnNormal', 'images/gui/buttons/normal.png', 2, 2);
+        this.load.spritesheet('gui:btnOver', 'images/gui/buttons/over.png', 2, 2);
+
         this.load.bitmapFont('font:guiOutline', 'fonts/guiOutline.png', 'fonts/guiOutline.xml');
         this.load.bitmapFont('font:gui', 'fonts/gui.png', 'fonts/gui.xml');
     },

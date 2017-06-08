@@ -4,6 +4,7 @@ GAME.Game = function() {};
 
 GAME.Game.prototype = {
     create: function() {
+        this.game.stage.backgroundColor = 0x333333;
         this.mapContainer = this.game.add.group();
 
         this.panelContainer = this.game.add.group();

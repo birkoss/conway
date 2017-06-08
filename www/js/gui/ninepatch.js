@@ -21,6 +21,13 @@ Ninepatch.prototype.removeBorders = function(position) {
     this.borders[position] = false;
 };
 
+Ninepatch.prototype.changeTexture = function(spriteSheet) {
+    this.spriteSheet = spriteSheet;
+    for (let i=0; i<this.backgroundContainer.children.length; i++) {
+        this.backgroundContainer.getChildAt(i).loadTexture(spriteSheet, i);
+    }
+};
+
 Ninepatch.prototype.enableClick = function(callback, context) {
     for (let i=0; i<this.backgroundContainer.children.length; i++) {
         this.backgroundContainer.getChildAt(i).inputEnabled = true;
@@ -32,6 +39,7 @@ Ninepatch.prototype.init = function() {
     for (let y=0; y<3; y++) {
         for (let x=0; x<3; x++) {
             let sprite = this.backgroundContainer.create(0, 0, this.spriteSheet);
+            sprite.scale.setTo(GAME.scale.sprite*2, GAME.scale.sprite*2);
             sprite.frame = (y * 3) + x;
             sprite.x = x * sprite.width;
             sprite.y = y * sprite.height;

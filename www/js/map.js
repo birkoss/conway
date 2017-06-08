@@ -27,7 +27,7 @@ Map.prototype.createBackground = function() {
     let background = this.backgroundContainer.create(0, 0, "tile:blank");
     background.width = this.tilesContainer.width + this.padding*2;
     background.height = this.tilesContainer.height + this.padding*2;
-    background.tint = 0x333333;
+    background.tint = 0x2b2b2b;
 
     background.inputEnabled = true;
     background.events.onInputDown.add(this.selectTile, this);

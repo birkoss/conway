@@ -30,7 +30,7 @@ Tile.prototype.init = function() {
 
 Tile.prototype.toggle = function() {
     if (!this.isAlive()) {
-        this.setItem("tile:detail", 0, true);
+        this.setItem("tile:enemies", 0, true);
     } else {
         this.item.destroy();
         this.item = null;
@@ -44,6 +44,6 @@ Tile.prototype.isAlive = function() {
 Tile.prototype.setItem = function(spriteName, frame, isEditable) {
     this.isEditable = (isEditable ? true : false);
 
-    this.item = this.createTile("tile:detail", 0);
+    this.item = this.createTile(spriteName, 0);
     this.addChild(this.item);
 };

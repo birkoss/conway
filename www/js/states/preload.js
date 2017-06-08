@@ -10,6 +10,7 @@ GAME.Preload.prototype = {
 
         this.load.spritesheet('tile:floor', 'images/tiles/floor.png', 8, 8);
         this.load.spritesheet('tile:detail', 'images/tiles/detail.png', 8, 8);
+        this.load.spritesheet('tile:enemies', 'images/tiles/enemies.png', 8, 8);
         this.load.image('tile:blank', 'images/tiles/blank.png');
 
         this.load.spritesheet('gui:btnNormal', 'images/gui/buttons/normal.png', 2, 2);

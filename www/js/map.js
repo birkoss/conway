@@ -52,6 +52,25 @@ Map.prototype.createMap = function() {
     //this.tiles[0][0].toggle();
 };
 
+Map.prototype.apply = function(mapData) {
+    console.log(JSON.stringify(mapData));
+    for (let gridY=0; gridY<this.gridHeight; gridY++) {
+        for (let gridX=0; gridX<this.gridWidth; gridX++) {
+            if (mapData.floor[gridY][gridX] == 0) {
+                this.tiles[gridY][gridX].isBurnable = false;
+                this.tiles[gridY][gridX].isEditable = false;
+                this.tiles[gridY][gridX].floor.frame = 3;
+                this.tiles[gridY][gridX].floor.animations.add("idle", [3, 9], 2, true);
+                this.tiles[gridY][gridX].floor.animations.play("idle");
+            } else {
+                if (mapData.trees[gridY][gridX] == 1) {
+                    this.tiles[gridY][gridX].addDecor();
+                }
+            }
+        }
+    }
+};
+
 Map.prototype.simulate = function() {
     let newGeneration = [];
 
@@ -59,11 +78,15 @@ Map.prototype.simulate = function() {
     for (let gridY=0; gridY<this.gridHeight; gridY++) {
         let rows = [];
         for (let gridX=0; gridX<this.gridWidth; gridX++) {
-            let total = this.getNeighboors(gridX, gridY, true);
-            if (this.tiles[gridY][gridX].isAlive()) {
-                rows.push(total >= 2 && total <= 3 ? true : false);
+            if (this.tiles[gridY][gridX].isBurnable) {
+                let total = this.getNeighboors(gridX, gridY, true);
+                if (this.tiles[gridY][gridX].isAlive()) {
+                    rows.push(total >= 2 && total <= 3 ? true : false);
+                } else {
+                    rows.push(total == 3 ? true : false);
+                }
             } else {
-                rows.push(total == 3 ? true : false);
+                rows.push(false);
             }
         }
         newGeneration.push(rows);

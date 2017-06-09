@@ -15,11 +15,13 @@ GAME.Game.prototype = {
     },
     createMap: function() {
         let mapConfig = {
-            mapWidth: 15,
-            mapHeight: 24
+            mapWidth: 10,
+            mapHeight: 10
         };
 
+        //this.generator = new Generator(this.game, mapConfig.mapWidth, mapConfig.mapHeight);
         this.map = new Map(this.game, mapConfig);
+        this.map.apply(GAME.json.maps['map1']);
         this.mapContainer.addChild(this.map);
 
         this.mapContainer.x = (this.game.width - this.mapContainer.width) / 2;

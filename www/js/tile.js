@@ -2,6 +2,9 @@ function Tile(game) {
     Phaser.Group.call(this, game);
 
     this.isEditable = true;
+    this.isBurnable = true;
+
+    this.isBurning = false;
     this.init();
 };
 
@@ -29,16 +32,30 @@ Tile.prototype.init = function() {
 };
 
 Tile.prototype.toggle = function() {
-    if (!this.isAlive()) {
-        this.setItem("tile:enemies", 0, true);
-    } else {
-        this.item.destroy();
-        this.item = null;
+    if (this.isBurnable) {
+        if (!this.isAlive()) {
+            this.isBurning = true;
+            this.setItem("tile:fire", 0, true);
+            this.item.animations.add("idle", [0, 1], 2, true);
+            this.item.animations.play("idle");
+        } else {
+            if (this.decor != null) {
+                this.decor.frame = 2;
+            }
+            this.item.destroy();
+            this.item = null;
+            this.isBurning = false;
+        }
     }
 };
 
 Tile.prototype.isAlive = function() {
-    return (this.item != undefined);
+    return this.isBurning;
+};
+
+Tile.prototype.addDecor = function() {
+    this.decor = this.createTile("tile:detail", 0);
+    this.addChild(this.decor);
 };
 
 Tile.prototype.setItem = function(spriteName, frame, isEditable) {

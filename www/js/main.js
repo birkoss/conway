@@ -7,7 +7,7 @@ GAME.config = {puzzleSize:"5x5", puzzleID:1};
 
 GAME.config.puzzles = {'5x5':[1], '10x10':[1]};
 
-GAME.scale = {sprite:2, normal:1};
+GAME.scale = {sprite:3, normal:1};
 GAME.scale.normal = Math.max(1, Math.min(6, Math.floor(window.innerWidth / 320) * 2));
 
 GAME.save = function() {

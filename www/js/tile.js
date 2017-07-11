@@ -1,6 +1,11 @@
 function Tile(game) {
     Phaser.Group.call(this, game);
 
+    this.totals = {
+        biome:0,
+        decor:0
+    };
+
     this.biome = this.createTile("tile:floor");
     this.addChild(this.biome);
     this.changeBiome(Map.Biomes.Grass);
@@ -33,6 +38,8 @@ Tile.prototype.createTile = function(spriteName, frame) {
 };
 
 Tile.prototype.changeBiome = function(newBiome) {
+    this.totals.biome = 0;
+
     this.currentBiome = newBiome;
 
     switch (this.currentBiome) {
@@ -49,6 +56,9 @@ Tile.prototype.changeBiome = function(newBiome) {
 };
 
 Tile.prototype.changeDecor = function(newDecor) {
+    let oldDecor = this.total.decor;
+    this.totals.decor = 0;
+
     this.currentDecor = newDecor;
 
     this.decor.alpha = (this.currentDecor == Map.Decors.None ? 0 : 1);
@@ -59,6 +69,11 @@ Tile.prototype.changeDecor = function(newDecor) {
             break;
         case Map.Decors.TreeDead:
             this.decor.frame = 2;
+            break;
+        case Map.Decors.TreeFruits:
+            this.decor.frame = 1;
+            /* Keep the total of the decor */
+            this.totals.decor = oldDecor;
             break;
     }
 };
@@ -118,6 +133,8 @@ Tile.prototype.isReady = function() {
 Tile.prototype.updateATB = function() {
     this.ATB = Math.min(this.ATB + this.getFillRateATB(), this.getMaxATB());
     if (this.isReady()) {
+        this.totals.biome++;
+        this.totals.decor++;
         this.onFullATB.dispatch(this);
     }
 };

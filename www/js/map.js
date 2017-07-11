@@ -33,7 +33,8 @@ Map.Biomes = {
 Map.Decors = {
     None: 0,
     TreeAlive: 1,
-    TreeDead: 2
+    TreeDead: 2,
+    TreeFruits: 3
 };
 
 Map.prototype.createBackground = function() {
@@ -167,7 +168,7 @@ Map.prototype.selectTile = function(map, pointer) {
 
         /* Clear the ATB of the selected tile, and its neighboors */
         this.tiles[gridY][gridX].clearATB();
-        this.getNeighboors(gridX, gridY).forEach(function(single_neighboor) {
+        this.getNeighboors(gridX, gridY, 2, 2).forEach(function(single_neighboor) {
             single_neighboor.clearATB();
         }, this);
 
@@ -197,7 +198,7 @@ Map.prototype.checkTileStatus = function(tile) {
         case Map.Biomes.Grass:
             if (surrounding[0][Map.Biomes.Water] != null) {
                 biome = Map.Biomes.Sand;
-                if (decor == Map.Decors.TreeAlive) {
+                if (decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) {
                     decor = Map.Decors.TreeDead;
                 }
             }
@@ -211,7 +212,13 @@ Map.prototype.checkTileStatus = function(tile) {
     switch (biome) {
         case Map.Biomes.Grass:
             if (surrounding[0][Map.Biomes.Water] == null && surrounding[1][Map.Biomes.Water] != null) {
-                decor = Map.Decors.TreeAlive;
+                if (decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) {
+                    if (tile.totals.decor > 2) {
+                        decor = Map.Decors.TreeFruits;
+                    }
+                } else {
+                    decor = Map.Decors.TreeAlive;
+                }
             }
             break;
     }

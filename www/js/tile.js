@@ -24,6 +24,7 @@ Tile.prototype.constructor = Tile;
 
 Tile.prototype.createTile = function(spriteName, frame) {
     let tile = this.game.add.sprite(0, 0, spriteName);
+    tile.scale.set(2);
     tile.anchor.set(0.5, 0.5);
 
     if (frame != null) {

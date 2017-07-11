@@ -18,8 +18,8 @@ GAME.Game.prototype = {
     },
     createMap: function() {
         let mapConfig = {
-            mapWidth: 10,
-            mapHeight: 10
+            mapWidth: 6,
+            mapHeight: 8
         };
 
         //this.generator = new Generator(this.game, mapConfig.mapWidth, mapConfig.mapHeight);

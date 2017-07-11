@@ -38,7 +38,7 @@ Map.prototype.createBackground = function() {
 
     background.inputEnabled = true;
     background.events.onInputDown.add(this.selectTile, this);
-    background.events.onInputUp.add(this.toggleTile, this);
+    //background.events.onInputUp.add(this.toggleTile, this);
 };
 
 Map.prototype.createMap = function() {
@@ -119,15 +119,22 @@ Map.prototype.updateTiles = function() {
 
 /* Helpers */
 
-Map.prototype.getNeighboors = function(gridX, gridY) {
+Map.prototype.getNeighboors = function(gridX, gridY, depth, increment, onlyAdjacent) {
+    depth = depth || 1;
+    increment = increment || 1;
+    onlyAdjacent = onlyAdjacent || true;
+
     let neighboors = [];
-    for (let y=-1; y<=1; y++) {
-        for (let x=-1; x<=1; x++) {
+    for (let y=-depth; y<=depth; y+=increment) {
+        for (let x=-depth; x<=depth; x+=increment) {
             if (x != 0 || y != 0) {
                 let newX = gridX + x;
                 let newY = gridY + y;
                 if (newX >= 0 && newX < this.gridWidth && newY >= 0 && newY < this.gridHeight) {
-                    neighboors.push(this.tiles[newY][newX]);
+
+                    if (!onlyAdjacent || (Math.abs(x) != Math.abs(y))) {
+                        neighboors.push(this.tiles[newY][newX]);
+                    }
                 }
             }
         }
@@ -161,24 +168,44 @@ Map.prototype.selectTile = function(map, pointer) {
     }
 };
 
-Map.prototype.toggleTile = function(map, pointer) {
-
-};
-
 Map.prototype.checkTileStatus = function(tile) {
     /* Update the biome */
-    let neighboors = this.getNeighboors(tile.gridX, tile.gridY);
     let biome = tile.currentBiome;
 
+    let surrounding = [{}, {}];
+
+    /* Check directly around */
+    for (let depth=1; depth<=2; depth++) {
+        this.getNeighboors(tile.gridX, tile.gridY, depth, depth).forEach(function(single_neighboor) {
+            if (surrounding[depth-1][single_neighboor.currentBiome] == null) {
+                surrounding[depth-1][single_neighboor.currentBiome] = 0;
+            }
+            surrounding[depth-1][single_neighboor.currentBiome]++;
+        }, this);
+    }
+
+    /* Check biome changes */
     switch (biome) {
         case Map.Biomes.Grass:
-            neighboors.forEach(function(single_neighboor) {
+            if (surrounding[0][Map.Biomes.Water] >= 1) {
+                biome = Map.Biomes.Sand;
+            }
+            break;
+    }
+
+    /* Check biome decors */
+    /*
+    let neighboorsAround = this.getNeighboors(tile.gridX, tile.gridY, 2, 2);
+    switch (biome) {
+        case Map.Biomes.Grass:
+            neighboorsAround.forEach(function(single_neighboor) {
                 if (single_neighboor.currentBiome == Map.Biomes.Water) {
                     biome = Map.Biomes.Sand;
                 }
             }, this);
             break;
     }
+    */
 
     if (biome != tile.currentBiome) {
         tile.changeBiome(biome);

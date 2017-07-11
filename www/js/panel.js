@@ -4,6 +4,8 @@ function Panel(game) {
     this.backgroundContainer = this.game.add.group();
     this.addChild(this.backgroundContainer);
 
+    this.buttonsContainer = this.game.add.group();
+
     this.buttonToggleClicked = new Phaser.Signal();
 
     this.init();
@@ -18,9 +20,16 @@ Panel.prototype.init = function() {
     background.height = 60;
     background.tint = 0x000000;
 
+    /*
     this.button = new PanelButton(this.game, "Start");
     this.button.onClicked.add(this.onButtonClicked, this);
     this.backgroundContainer.addChild(this.button);
+    */
+};
+
+Panel.prototype.addButton = function(button) {
+    button.x = this.buttonsContainer.width + 24;
+    this.buttonsContainer.addChild(button);
 };
 
 Panel.prototype.onButtonClicked = function() {

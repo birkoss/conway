@@ -6,12 +6,10 @@ GAME.Game.prototype = {
     create: function() {
         this.game.stage.backgroundColor = 0x333333;
         this.mapContainer = this.game.add.group();
+        this.createMap();
 
         this.panelContainer = this.game.add.group();
-
         this.createPanel();
-
-        this.createMap();
     },
     update: function() {
         this.map.updateTiles();
@@ -32,11 +30,26 @@ GAME.Game.prototype = {
     },
     createPanel: function() {
         this.panel = new Panel(this.game);
-        this.panel.buttonToggleClicked.add(this.onPanelToggleButtonClicked, this);
+        //this.panel.onTileChanged.add(this.onPanelTileChanged, this);
+        //this.panel.buttonToggleClicked.add(this.onPanelToggleButtonClicked, this);
         this.panelContainer.addChild(this.panel);
+
+        let tiles = ['water','grass'];
+        tiles.forEach(function(single_tile) {
+            let button = this.game.add.sprite(0, 0, "tile:biome-" + single_tile);
+            button.scale.set(2);
+            button.biome = single_tile;
+            button.inputEnabled = true;
+            button.events.onInputDown.add(this.onPanelTileClicked, this);
+            this.panel.addButton(button);
+        }, this);
     },
     /* Events */
     onPanelToggleButtonClicked: function(state) {
         this.map.simulate();
+    },
+    onPanelTileClicked: function(tile) {
+        this.map.changeBiome(tile.biome);
     }
+
 };

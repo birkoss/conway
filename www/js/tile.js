@@ -48,7 +48,7 @@ Tile.prototype.changeBiome = function(newBiome) {
 };
 
 Tile.prototype.changeDecor = function(newDecor) {
-    let oldDecor = this.total.decor;
+    let oldDecor = this.totals.decor;
     this.totals.decor = 0;
 
     this.currentDecor = newDecor;

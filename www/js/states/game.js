@@ -13,6 +13,9 @@ GAME.Game.prototype = {
 
         this.createMap();
     },
+    update: function() {
+        this.map.updateTiles();
+    },
     createMap: function() {
         let mapConfig = {
             mapWidth: 10,
@@ -21,7 +24,7 @@ GAME.Game.prototype = {
 
         //this.generator = new Generator(this.game, mapConfig.mapWidth, mapConfig.mapHeight);
         this.map = new Map(this.game, mapConfig);
-        this.map.apply(GAME.json.maps['map1']);
+        //this.map.apply(GAME.json.maps['map1']);
         this.mapContainer.addChild(this.map);
 
         this.mapContainer.x = (this.game.width - this.mapContainer.width) / 2;

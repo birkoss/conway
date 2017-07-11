@@ -13,6 +13,7 @@ function Map(game, config) {
     this.add(this.tilesContainer);
 
     this.padding = 2 * GAME.scale.sprite;
+    this.padding = 5;
 
     this.createMap();
     this.createBackground();
@@ -22,6 +23,12 @@ function Map(game, config) {
 
 Map.prototype = Object.create(Phaser.Group.prototype);
 Map.prototype.constructor = Map;
+
+Map.Biomes = {
+    Grass: 1,
+    Water: 2,
+    Sand: 3
+};
 
 Map.prototype.createBackground = function() {
     let background = this.backgroundContainer.create(0, 0, "tile:blank");
@@ -43,6 +50,8 @@ Map.prototype.createMap = function() {
             tile.y = gridY * (tile.height + this.padding);
             tile.gridX = gridX;
             tile.gridY = gridY;
+            tile.onFullATB.add(this.checkTileStatus, this);
+
             rows.push(tile);
             this.tilesContainer.addChild(tile);
         }
@@ -102,24 +111,28 @@ Map.prototype.simulate = function() {
     }
 };
 
+Map.prototype.updateTiles = function() {
+    this.tilesContainer.forEach(function(single_tile) {
+        single_tile.updateATB();
+    }, this);
+};
+
 /* Helpers */
 
-Map.prototype.getNeighboors = function(gridX, gridY, isAlive) {
-    let total = 0;
+Map.prototype.getNeighboors = function(gridX, gridY) {
+    let neighboors = [];
     for (let y=-1; y<=1; y++) {
         for (let x=-1; x<=1; x++) {
             if (x != 0 || y != 0) {
                 let newX = gridX + x;
                 let newY = gridY + y;
                 if (newX >= 0 && newX < this.gridWidth && newY >= 0 && newY < this.gridHeight) {
-                    if (this.tiles[newY][newX].isAlive() == isAlive) {
-                        total++;
-                    }
+                    neighboors.push(this.tiles[newY][newX]);
                 }
             }
         }
     }
-    return total;
+    return neighboors;
 };
 
 /* Events */
@@ -135,11 +148,41 @@ Map.prototype.selectTile = function(map, pointer) {
     let gridX = Math.floor((x-this.padding) / (this.tiles[0][0].width+this.padding));
     let gridY = Math.floor((y-this.padding) / (this.tiles[0][0].height+this.padding));
     if (gridX >= 0 && gridX < this.gridWidth && gridY >= 0 && gridY < this.gridHeight) {
-        this.tiles[gridY][gridX].toggle();
+        //this.tiles[gridY][gridX].toggle();
+        this.tiles[gridY][gridX].changeBiome(Map.Biomes.Water);
+
+        /* Clear the ATB of the selected tile, and its neighboors */
+        this.tiles[gridY][gridX].clearATB();
+        this.getNeighboors(gridX, gridY).forEach(function(single_neighboor) {
+            single_neighboor.clearATB();
+        }, this);
+
         console.log(gridX + "x" + gridY);
     }
 };
 
 Map.prototype.toggleTile = function(map, pointer) {
 
+};
+
+Map.prototype.checkTileStatus = function(tile) {
+    /* Update the biome */
+    let neighboors = this.getNeighboors(tile.gridX, tile.gridY);
+    let biome = tile.currentBiome;
+
+    switch (biome) {
+        case Map.Biomes.Grass:
+            neighboors.forEach(function(single_neighboor) {
+                if (single_neighboor.currentBiome == Map.Biomes.Water) {
+                    biome = Map.Biomes.Sand;
+                }
+            }, this);
+            break;
+    }
+
+    if (biome != tile.currentBiome) {
+        tile.changeBiome(biome);
+    }
+
+    tile.clearATB();
 };

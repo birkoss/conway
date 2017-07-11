@@ -1,11 +1,13 @@
 function Tile(game) {
     Phaser.Group.call(this, game);
 
-    this.isEditable = true;
-    this.isBurnable = true;
+    this.biome = this.createTile("tile:floor");
+    this.addChild(this.biome);
+    this.changeBiome(Map.Biomes.Grass);
 
-    this.isBurning = false;
-    this.init();
+    this.onFullATB = new Phaser.Signal();
+
+    this.clearATB();
 };
 
 Tile.prototype = Object.create(Phaser.Group.prototype);
@@ -26,9 +28,20 @@ Tile.prototype.createTile = function(spriteName, frame) {
     return tile;
 };
 
-Tile.prototype.init = function() {
-    this.floor = this.createTile("tile:floor", 0);
-    this.addChild(this.floor);
+Tile.prototype.changeBiome = function(newBiome) {
+    this.currentBiome = newBiome;
+
+    switch (this.currentBiome) {
+        case Map.Biomes.Grass:
+            this.biome.frame = 0;
+            break;
+        case Map.Biomes.Water:
+            this.biome.frame = 3;
+            break;
+        case Map.Biomes.Sand:
+            this.biome.frame = 1;
+            break;
+    }
 };
 
 Tile.prototype.toggle = function() {
@@ -63,4 +76,29 @@ Tile.prototype.setItem = function(spriteName, frame, isEditable) {
 
     this.item = this.createTile(spriteName, 0);
     this.addChild(this.item);
+};
+
+/* ATB */
+
+Tile.prototype.clearATB = function() {
+    this.ATB = 0;
+};
+
+Tile.prototype.getMaxATB = function() {
+    return 100;
+};
+
+Tile.prototype.getFillRateATB = function() {
+    return 1;
+};
+
+Tile.prototype.isReady = function() {
+    return (this.ATB >= this.getMaxATB());
+};
+
+Tile.prototype.updateATB = function() {
+    this.ATB = Math.min(this.ATB + this.getFillRateATB(), this.getMaxATB());
+    if (this.isReady()) {
+        this.onFullATB.dispatch(this);
+    }
 };

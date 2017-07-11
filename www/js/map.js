@@ -21,6 +21,8 @@ function Map(game, config) {
     this.createBackground();
 
     this.tilesContainer.x = this.tilesContainer.y = this.padding;
+
+    //this.clearTilesAround(2, 2);
 };
 
 Map.prototype = Object.create(Phaser.Group.prototype);
@@ -59,38 +61,17 @@ Map.prototype.createMap = function() {
             tile.y = gridY * (tile.height + this.padding);
             tile.gridX = gridX;
             tile.gridY = gridY;
-            tile.onFullATB.add(this.checkTileStatus, this);
+            tile.onFullATB.add(this.onTileReady, this);
 
             rows.push(tile);
             this.tilesContainer.addChild(tile);
         }
         this.tiles.push(rows);
     }
-
-    //this.tiles[0][0].toggle();
 };
 
 Map.prototype.changeBiome = function(newBiome) {
     this.currentBiome = newBiome;
-};
-
-Map.prototype.apply = function(mapData) {
-    console.log(JSON.stringify(mapData));
-    for (let gridY=0; gridY<this.gridHeight; gridY++) {
-        for (let gridX=0; gridX<this.gridWidth; gridX++) {
-            if (mapData.floor[gridY][gridX] == 0) {
-                this.tiles[gridY][gridX].isBurnable = false;
-                this.tiles[gridY][gridX].isEditable = false;
-                this.tiles[gridY][gridX].floor.frame = 3;
-                this.tiles[gridY][gridX].floor.animations.add("idle", [3, 9], 2, true);
-                this.tiles[gridY][gridX].floor.animations.play("idle");
-            } else {
-                if (mapData.trees[gridY][gridX] == 1) {
-                    this.tiles[gridY][gridX].addDecor();
-                }
-            }
-        }
-    }
 };
 
 Map.prototype.simulate = function() {
@@ -145,7 +126,7 @@ Map.prototype.getNeighboors = function(gridX, gridY, depth, increment, onlyAdjac
                 let newY = gridY + y;
                 if (newX >= 0 && newX < this.gridWidth && newY >= 0 && newY < this.gridHeight) {
 
-                    if (!onlyAdjacent || (Math.abs(x) != Math.abs(y))) {
+                    if (!onlyAdjacent || (gridX == newX || gridY == newY)) {
                         neighboors.push(this.tiles[newY][newX]);
                     }
                 }
@@ -172,53 +153,63 @@ Map.prototype.selectTile = function(map, pointer) {
         this.tiles[gridY][gridX].changeBiome(this.currentBiome);
 
         /* Clear the ATB of the selected tile, and its neighboors */
-        this.tiles[gridY][gridX].clearATB();
-        this.getNeighboors(gridX, gridY, 2, 2).forEach(function(single_neighboor) {
-            single_neighboor.clearATB();
-        }, this);
-
-        console.log(gridX + "x" + gridY);
+        this.clearTilesAround(gridX, gridY);
     }
 };
 
-Map.prototype.checkTileStatus = function(tile) {
+Map.prototype.clearTilesAround = function(gridX, gridY) {
+    console.log("Clearing around: " + gridX + "x" + gridY);
+    this.tiles[gridY][gridX].clearATB();
+    this.getNeighboors(gridX, gridY, 2, 1).forEach(function(single_neighboor) {
+        single_neighboor.alpha = 0.3;
+    console.log("Clearing neighboor: " + single_neighboor.gridX + "x" + single_neighboor.gridY);
+        single_neighboor.clearATB();
+    }, this);
+};
+
+Map.prototype.onTileReady = function(tile) {
     /* Update the biome */
     let biome = tile.currentBiome;
     let decor = tile.currentDecor;
 
-    let surrounding = [{}, {}];
-
+    let surrounding = {};
     /* Check directly around */
     for (let depth=1; depth<=2; depth++) {
+        if (surrounding[depth] == null) {
+            surrounding[depth] = {};
+        }
+
         this.getNeighboors(tile.gridX, tile.gridY, depth, depth).forEach(function(single_neighboor) {
-            if (surrounding[depth-1][single_neighboor.currentBiome] == null) {
-                surrounding[depth-1][single_neighboor.currentBiome] = 0;
+            if (surrounding[depth][single_neighboor.currentBiome] == null) {
+                surrounding[depth][single_neighboor.currentBiome] = 0;
             }
-            surrounding[depth-1][single_neighboor.currentBiome]++;
+            surrounding[depth][single_neighboor.currentBiome]++;
         }, this);
     }
 
     /* Check biome changes */
     switch (biome) {
         case Map.Biomes.Grass:
-            if (surrounding[0][Map.Biomes.Water] != null) {
+            if (surrounding[1][Map.Biomes.Water] != null) {
+                console.log("===" + tile.gridX + "x" + tile.gridY);
                 biome = Map.Biomes.Sand;
             }
             break;
         case Map.Biomes.Sand:
-            if (surrounding[0][Map.Biomes.Water] == null && tile.totals.decor > 1) {
+            if (surrounding[1][Map.Biomes.Water] == null && tile.totals.decor > 1) {
                 biome = Map.Biomes.Grass;
             }
     }
     if (biome != tile.currentBiome) {
         tile.changeBiome(biome);
+        this.clearTilesAround(tile.gridX, tile.gridY);
     }
 
     /* Check biome decors */
     switch (biome) {
         case Map.Biomes.Grass:
             /* If we have a Water 2 tiles away */
-            if (surrounding[1][Map.Biomes.Water] != null) {
+            if (surrounding[2][Map.Biomes.Water] != null) {
                 if ((decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) && tile.totals.decor > 2) {
                     decor = Map.Decors.TreeFruits;
                 } else {

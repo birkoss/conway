@@ -36,20 +36,30 @@ GAME.Game.prototype = {
 
         let tiles = ['water','grass'];
         tiles.forEach(function(single_tile) {
-            let button = this.game.add.sprite(0, 0, "tile:biome-" + single_tile);
-            button.scale.set(2);
+            let button = new PanelButton(this.game);
+            button.setSprite("tile:biome-" + single_tile);
             button.biome = single_tile;
-            button.inputEnabled = true;
-            button.events.onInputDown.add(this.onPanelTileClicked, this);
+            button.onClicked.add(this.onPanelTileClicked, this);
             this.panel.addButton(button);
         }, this);
+
+        this.panelSelectButton(this.panel.buttonsContainer.getChildAt(0));
+    },
+
+    panelSelectButton: function(button) {
+        this.map.changeBiome(button.biome);
+        button.background.tint = 0xcccccc;
     },
     /* Events */
     onPanelToggleButtonClicked: function(state) {
         this.map.simulate();
     },
-    onPanelTileClicked: function(tile) {
-        this.map.changeBiome(tile.biome);
+    onPanelTileClicked: function(button) {
+        this.panel.buttonsContainer.forEach(function(single_button) {
+            single_button.background.tint = 0x333333;
+        }, this);
+
+        this.panelSelectButton(button);
     }
 
 };

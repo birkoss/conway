@@ -17,7 +17,7 @@ Panel.prototype.constructor = Panel;
 Panel.prototype.init = function() {
     let background = this.backgroundContainer.create(0, 0, "tile:blank");
     background.width = this.game.width;
-    background.height = 60;
+    background.height = 66;
     background.tint = 0x000000;
 
     /*
@@ -28,7 +28,12 @@ Panel.prototype.init = function() {
 };
 
 Panel.prototype.addButton = function(button) {
-    button.x = this.buttonsContainer.width + 24;
+    if (this.buttonsContainer.width > 0) {
+        button.x = this.buttonsContainer.width + 6;
+    }
+    button.x += 6;
+
+    button.y = (this.height - button.height) / 2;
     this.buttonsContainer.addChild(button);
 };
 

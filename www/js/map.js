@@ -13,7 +13,7 @@ function Map(game, config) {
     this.add(this.tilesContainer);
 
     this.padding = 2 * GAME.scale.sprite;
-    this.padding = 5;
+    this.padding = 3;
 
     this.createMap();
     this.createBackground();
@@ -25,16 +25,16 @@ Map.prototype = Object.create(Phaser.Group.prototype);
 Map.prototype.constructor = Map;
 
 Map.Biomes = {
-    Grass: 1,
-    Water: 2,
-    Sand: 3
+    Grass: 'grass',
+    Water: 'water',
+    Sand: 'sand'
 };
 
 Map.Decors = {
-    None: 0,
-    TreeAlive: 1,
-    TreeDead: 2,
-    TreeFruits: 3
+    None: '',
+    TreeAlive: 'tree-alive',
+    TreeDead: 'tree-dead',
+    TreeFruits: 'tree-fruits'
 };
 
 Map.prototype.createBackground = function() {

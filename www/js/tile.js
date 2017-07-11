@@ -6,11 +6,11 @@ function Tile(game) {
         decor:0
     };
 
-    this.biome = this.createTile("tile:floor");
+    this.biome = this.createTile("tile:biome-grass");
     this.addChild(this.biome);
     this.changeBiome(Map.Biomes.Grass);
 
-    this.decor = this.createTile("tile:detail");
+    this.decor = this.createTile("tile:biome-grass");
     this.addChild(this.decor);
     this.changeDecor(Map.Decors.None);
 
@@ -24,7 +24,6 @@ Tile.prototype.constructor = Tile;
 
 Tile.prototype.createTile = function(spriteName, frame) {
     let tile = this.game.add.sprite(0, 0, spriteName);
-    tile.scale.setTo(GAME.scale.sprite, GAME.scale.sprite);
     tile.anchor.set(0.5, 0.5);
 
     if (frame != null) {
@@ -42,17 +41,9 @@ Tile.prototype.changeBiome = function(newBiome) {
 
     this.currentBiome = newBiome;
 
-    switch (this.currentBiome) {
-        case Map.Biomes.Grass:
-            this.biome.frame = 0;
-            break;
-        case Map.Biomes.Water:
-            this.biome.frame = 3;
-            break;
-        case Map.Biomes.Sand:
-            this.biome.frame = 1;
-            break;
-    }
+    this.biome.loadTexture("tile:biome-" + this.currentBiome);
+    this.biome.animations.add("idle");
+    this.biome.animations.play("idle", 2, true);
 };
 
 Tile.prototype.changeDecor = function(newDecor) {
@@ -62,19 +53,15 @@ Tile.prototype.changeDecor = function(newDecor) {
     this.currentDecor = newDecor;
 
     this.decor.alpha = (this.currentDecor == Map.Decors.None ? 0 : 1);
+    if (this.currentDecor != Map.Decors.None) {
+        this.decor.loadTexture("tile:decor-" + this.currentDecor);
 
-    switch (this.currentDecor) {
-        case Map.Decors.TreeAlive:
-            this.decor.frame = 0;
-            break;
-        case Map.Decors.TreeDead:
-            this.decor.frame = 2;
-            break;
-        case Map.Decors.TreeFruits:
-            this.decor.frame = 1;
-            /* Keep the total of the decor */
-            this.totals.decor = oldDecor;
-            break;
+        switch (this.currentDecor) {
+            case Map.Decors.TreeFruits:
+                /* Keep the total of the decor */
+                this.totals.decor = oldDecor;
+                break;
+        }
     }
 };
 

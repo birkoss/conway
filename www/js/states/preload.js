@@ -18,6 +18,10 @@ GAME.Preload.prototype = {
         this.load.spritesheet('tile:biome-sand', 'images/tiles/biomes/sand.png', 24, 24);
         this.load.spritesheet('tile:biome-water', 'images/tiles/biomes/water.png', 24, 24);
 
+        this.load.spritesheet('tile:decor-tree-alive', 'images/tiles/decors/tree-alive.png', 24, 24);
+        this.load.spritesheet('tile:decor-tree-fruits', 'images/tiles/decors/tree-fruits.png', 24, 24);
+        this.load.spritesheet('tile:decor-tree-dead', 'images/tiles/decors/tree-dead.png', 24, 24);
+
         this.load.spritesheet('gui:btnNormal', 'images/gui/buttons/normal.png', 2, 2);
         this.load.spritesheet('gui:btnOver', 'images/gui/buttons/over.png', 2, 2);
 

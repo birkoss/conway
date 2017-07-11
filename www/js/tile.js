@@ -42,6 +42,14 @@ Tile.prototype.changeBiome = function(newBiome) {
 
     this.currentBiome = newBiome;
 
+    switch (this.currentBiome) {
+        case Map.Biomes.Water:
+            if (this.decor != Map.Decors.None) {
+                this.changeDecor(Map.Decors.None);
+            }
+            break;
+    }
+
     this.biome.loadTexture("tile:biome-" + this.currentBiome);
     this.biome.animations.add("idle");
     this.biome.animations.play("idle", 2, true);

@@ -5,6 +5,10 @@ function Tile(game) {
     this.addChild(this.biome);
     this.changeBiome(Map.Biomes.Grass);
 
+    this.decor = this.createTile("tile:detail");
+    this.addChild(this.decor);
+    this.changeDecor(Map.Decors.None);
+
     this.onFullATB = new Phaser.Signal();
 
     this.clearATB();
@@ -40,6 +44,21 @@ Tile.prototype.changeBiome = function(newBiome) {
             break;
         case Map.Biomes.Sand:
             this.biome.frame = 1;
+            break;
+    }
+};
+
+Tile.prototype.changeDecor = function(newDecor) {
+    this.currentDecor = newDecor;
+
+    this.decor.alpha = (this.currentDecor == Map.Decors.None ? 0 : 1);
+
+    switch (this.currentDecor) {
+        case Map.Decors.TreeAlive:
+            this.decor.frame = 0;
+            break;
+        case Map.Decors.TreeDead:
+            this.decor.frame = 2;
             break;
     }
 };

@@ -30,6 +30,12 @@ Map.Biomes = {
     Sand: 3
 };
 
+Map.Decors = {
+    None: 0,
+    TreeAlive: 1,
+    TreeDead: 2
+};
+
 Map.prototype.createBackground = function() {
     let background = this.backgroundContainer.create(0, 0, "tile:blank");
     background.width = this.tilesContainer.width + this.padding*2;
@@ -157,6 +163,7 @@ Map.prototype.selectTile = function(map, pointer) {
     if (gridX >= 0 && gridX < this.gridWidth && gridY >= 0 && gridY < this.gridHeight) {
         //this.tiles[gridY][gridX].toggle();
         this.tiles[gridY][gridX].changeBiome(Map.Biomes.Water);
+        this.tiles[gridY][gridX].changeDecor(Map.Decors.None);
 
         /* Clear the ATB of the selected tile, and its neighboors */
         this.tiles[gridY][gridX].clearATB();
@@ -171,6 +178,7 @@ Map.prototype.selectTile = function(map, pointer) {
 Map.prototype.checkTileStatus = function(tile) {
     /* Update the biome */
     let biome = tile.currentBiome;
+    let decor = tile.currentDecor;
 
     let surrounding = [{}, {}];
 
@@ -187,28 +195,28 @@ Map.prototype.checkTileStatus = function(tile) {
     /* Check biome changes */
     switch (biome) {
         case Map.Biomes.Grass:
-            if (surrounding[0][Map.Biomes.Water] >= 1) {
+            if (surrounding[0][Map.Biomes.Water] != null) {
                 biome = Map.Biomes.Sand;
+                if (decor == Map.Decors.TreeAlive) {
+                    decor = Map.Decors.TreeDead;
+                }
             }
             break;
     }
-
-    /* Check biome decors */
-    /*
-    let neighboorsAround = this.getNeighboors(tile.gridX, tile.gridY, 2, 2);
-    switch (biome) {
-        case Map.Biomes.Grass:
-            neighboorsAround.forEach(function(single_neighboor) {
-                if (single_neighboor.currentBiome == Map.Biomes.Water) {
-                    biome = Map.Biomes.Sand;
-                }
-            }, this);
-            break;
-    }
-    */
-
     if (biome != tile.currentBiome) {
         tile.changeBiome(biome);
+    }
+
+    /* Check biome decors */
+    switch (biome) {
+        case Map.Biomes.Grass:
+            if (surrounding[0][Map.Biomes.Water] == null && surrounding[1][Map.Biomes.Water] != null) {
+                decor = Map.Decors.TreeAlive;
+            }
+            break;
+    }
+    if (decor != tile.currentDecor) {
+        tile.changeDecor(decor);
     }
 
     tile.clearATB();

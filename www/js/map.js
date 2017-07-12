@@ -153,15 +153,10 @@ Map.prototype.selectTile = function(map, pointer) {
         this.tiles[gridY][gridX].changeBiome(this.currentBiome);
 
         /* Clear the ATB of the selected tile, and its neighboors */
-        this.clearTilesAround(gridX, gridY);
+        this.tilesContainer.forEach(function(single_tile) {
+            single_tile.clearATB();
+        }, this);
     }
-};
-
-Map.prototype.clearTilesAround = function(gridX, gridY) {
-    this.tiles[gridY][gridX].clearATB();
-    this.getNeighboors(gridX, gridY, 2, 1).forEach(function(single_neighboor) {
-        single_neighboor.clearATB();
-    }, this);
 };
 
 Map.prototype.onTileReady = function(tile) {
@@ -196,33 +191,37 @@ Map.prototype.onTileReady = function(tile) {
                 biome = Map.Biomes.Grass;
             }
     }
-    if (biome != tile.currentBiome) {
-        tile.changeBiome(biome);
-        //this.clearTilesAround(tile.gridX, tile.gridY);
+
+    /* Only change the decor if the biome is the same */
+    if (biome == tile.currentBiome) {
+        /* Check biome decors */
+        switch (biome) {
+            case Map.Biomes.Grass:
+                /* If we have a Water 2 tiles away */
+                if (surrounding[2][Map.Biomes.Water] != null) {
+                    if ((decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) && tile.totals.decor > 2) {
+                        decor = Map.Decors.TreeFruits;
+                    } else {
+                        decor = Map.Decors.TreeAlive;
+                    }
+                }
+                break;
+            case Map.Biomes.Sand:
+                /* Kill all trees on Sand after 1 turn */
+                if ((decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) && tile.totals.decor > 1 && tile.totals.biome > 0) {
+                    decor = Map.Decors.TreeDead; 
+                } else if (decor == Map.Decors.TreeDead && tile.totals.decor > 1) {
+                    /* Remove all dead trees after X turns */
+                    decor = Map.Decors.None;
+                }
+                break;
+        }
     }
 
-    /* Check biome decors */
-    switch (biome) {
-        case Map.Biomes.Grass:
-            /* If we have a Water 2 tiles away */
-            if (surrounding[2][Map.Biomes.Water] != null) {
-                if ((decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) && tile.totals.decor > 2) {
-                    decor = Map.Decors.TreeFruits;
-                } else {
-                    decor = Map.Decors.TreeAlive;
-                }
-            }
-            break;
-        case Map.Biomes.Sand:
-            /* Kill all trees on Sand after 1 turn */
-            if ((decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) && tile.totals.decor > 1 && tile.totals.biome > 0) {
-                decor = Map.Decors.TreeDead; 
-            } else if (decor == Map.Decors.TreeDead && tile.totals.decor > 1) {
-                /* Remove all dead trees after X turns */
-                decor = Map.Decors.None;
-            }
-            break;
+    if (biome != tile.currentBiome) {
+        tile.changeBiome(biome);
     }
+
     if (decor != tile.currentDecor) {
         tile.changeDecor(decor);
     }

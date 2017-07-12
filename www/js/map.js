@@ -158,11 +158,8 @@ Map.prototype.selectTile = function(map, pointer) {
 };
 
 Map.prototype.clearTilesAround = function(gridX, gridY) {
-    console.log("Clearing around: " + gridX + "x" + gridY);
     this.tiles[gridY][gridX].clearATB();
     this.getNeighboors(gridX, gridY, 2, 1).forEach(function(single_neighboor) {
-        single_neighboor.alpha = 0.3;
-    console.log("Clearing neighboor: " + single_neighboor.gridX + "x" + single_neighboor.gridY);
         single_neighboor.clearATB();
     }, this);
 };
@@ -191,7 +188,6 @@ Map.prototype.onTileReady = function(tile) {
     switch (biome) {
         case Map.Biomes.Grass:
             if (surrounding[1][Map.Biomes.Water] != null) {
-                console.log("===" + tile.gridX + "x" + tile.gridY);
                 biome = Map.Biomes.Sand;
             }
             break;
@@ -202,7 +198,7 @@ Map.prototype.onTileReady = function(tile) {
     }
     if (biome != tile.currentBiome) {
         tile.changeBiome(biome);
-        this.clearTilesAround(tile.gridX, tile.gridY);
+        //this.clearTilesAround(tile.gridX, tile.gridY);
     }
 
     /* Check biome decors */
@@ -219,11 +215,10 @@ Map.prototype.onTileReady = function(tile) {
             break;
         case Map.Biomes.Sand:
             /* Kill all trees on Sand after 1 turn */
-            if ((decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) && tile.totals.decor > 1) {
+            if ((decor == Map.Decors.TreeAlive || decor == Map.Decors.TreeFruits) && tile.totals.decor > 1 && tile.totals.biome > 0) {
                 decor = Map.Decors.TreeDead; 
-            }
-            /* Remove all dead trees after X turns */
-            if (decor == Map.Decors.TreeDead && tile.totals.decor > 3) {
+            } else if (decor == Map.Decors.TreeDead && tile.totals.decor > 1) {
+                /* Remove all dead trees after X turns */
                 decor = Map.Decors.None;
             }
             break;
